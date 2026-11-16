@@ -1,44 +1,39 @@
 # Service Request Management System
 
-A beginner-friendly CRUD application built using **Python, FastAPI, MySQL, HTML, CSS, and JavaScript Fetch API**. This project uses a separate frontend and backend without Jinja2 templates.
+A beginner-friendly CRUD application built using **Python, FastAPI, MySQL, HTML, CSS, and JavaScript Fetch API**.
 
 ## Features
 
-* Add, view, edit, and delete service requests.
-* Search by customer name, email, phone, or case ID.
-* Filter requests by status, region, and location.
-* Display status summary cards.
-* Pagination for service request listings.
-* Reopen a request through the API (`POST /api/requests/{id}/reopen`).
-* Export all service requests to CSV.
-* Date filters: All Dates, Last 7 Days, Last 30 Days, Last 90 Days, Current Financial Year, Previous Financial Year, and Custom Date Range.
-* Filter reopened requests only.
-* Filter TAT-breached requests only.
-* Display TAT status as Within TAT or TAT Breached.
-* Print the service request table.
-* Store all request details in a MySQL database.
+- Add, view, edit, and delete service requests.
+- Search by customer name, email, phone number, or case ID.
+- Filter requests by status, region, and location.
+- Display status summary cards.
+- Pagination for service request records.
+- Reopen closed service requests.
+- Calculate Turnaround Time (TAT).
+- Filter by date range and TAT status.
+- Identify reopened requests and TAT-breached requests.
+- Export service requests to CSV.
+- Print service request records.
+- Store data in MySQL database.
 
 ## Technologies Used
 
-| Technology | Purpose                        |
-| ---------- | ------------------------------ |
-| Python     | Backend programming            |
-| FastAPI    | Backend API development        |
-| MySQL      | Database management            |
-| HTML       | Frontend structure             |
-| CSS        | Frontend styling               |
-| JavaScript | Frontend functionality         |
-| Fetch API  | Frontend-backend communication |
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend:** Python, FastAPI
+- **Database:** MySQL
+- **API Communication:** JavaScript Fetch API
 
 ## Project Structure
 
 ```text
-srm/
+Service-Request-Management-System/
 │
 ├── main.py
 ├── schema.sql
 ├── reports.sql
 ├── requirements.txt
+├── run_windows.bat
 │
 └── static/
     ├── index.html
@@ -46,190 +41,86 @@ srm/
     └── app.js
 ```
 
-## 1. Create the Database
+## Installation and Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd Service-Request-Management-System
+```
+
+### 2. Create the MySQL Database
 
 Open MySQL Command Line Client and execute:
 
 ```sql
-SOURCE C:/full/path/to/srm/schema.sql;
+SOURCE C:/full/path/to/schema.sql;
 ```
 
-Replace the example path with the actual location of your `srm` project folder.
+This creates the `service_request_db` database and the required table.
 
-**Important:** The `schema.sql` script drops the existing `service_request_db` database, creates it again, creates the `serviceInfo` table, and inserts 8 sample records.
+**Note:** The schema script drops and recreates the existing database. Existing data will be deleted.
 
-Sample customer names:
+### 3. Install Dependencies
 
-* Arun Kumar
-* Kaviya
-* Murugan
-* Priya
-* Selvam
-* Nandhini
-* Vijay
-* Deepa
-
-**Warning:** Running this script permanently deletes all existing data in `service_request_db`. Back up important data before executing it. Run this script only once for a fresh setup.
-
-### Run SQL Reports
-
-To execute the SQL reports:
-
-```sql
-SOURCE C:/full/path/to/srm/reports.sql;
-```
-
-The `reports.sql` file includes:
-
-* Complete service request listing
-* Status-wise request count
-* Region-wise request count
-* Customer-wise request count
-* Turnaround Time (TAT) reports
-* Last 7 days report
-
-**Database Name:** `service_request_db`
-
-**Table Name:** `serviceInfo`
-
-## 2. Install Python Packages
-
-Open PowerShell inside the project folder and execute:
-
-```powershell
+```bash
 python -m pip install -r requirements.txt
 ```
 
-## 3. Configure MySQL Password
+### 4. Configure MySQL Password
 
-Set your actual MySQL password in PowerShell:
+In PowerShell:
 
 ```powershell
 $env:DB_PASSWORD="YOUR_MYSQL_PASSWORD"
 ```
 
-Replace `YOUR_MYSQL_PASSWORD` with your actual MySQL password.
+### 5. Run the Application
 
-If your MySQL username is different from the application's default username, configure it:
-
-```powershell
-$env:DB_USER="root"
-```
-
-Do not upload actual passwords or private credentials to GitHub.
-
-## 4. Run the Application
-
-Start the FastAPI server:
-
-```powershell
+```bash
 python -m uvicorn main:app --reload
 ```
 
-Open the application in your browser:
+### 6. Open the Application
 
-**Frontend:** http://127.0.0.1:8000
+Application: http://127.0.0.1:8000
 
-**API Documentation:** http://127.0.0.1:8000/docs
+API Documentation: http://127.0.0.1:8000/docs
 
-## 5. API Operations
+## API Endpoints
 
-The application uses REST API endpoints to perform CRUD operations.
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/requests` | View service requests |
+| GET | `/api/requests/{id}` | View a single request |
+| POST | `/api/requests` | Add a new request |
+| PUT | `/api/requests/{id}` | Update a request |
+| DELETE | `/api/requests/{id}` | Delete a request |
+| POST | `/api/requests/{id}/reopen` | Reopen a request |
+| GET | `/api/export` | Export records to CSV |
+| GET | `/api/health` | Check database connection |
 
-| HTTP Method | Operation | Purpose                   |
-| ----------- | --------- | ------------------------- |
-| GET         | Read      | View service requests     |
-| POST        | Create    | Add a new service request |
-| PUT         | Update    | Edit an existing request  |
-| DELETE      | Delete    | Remove a service request  |
-| POST        | Reopen    | Reopen a closed request   |
+## TAT Calculation
 
-The reopen endpoint is:
+Turnaround Time (TAT) is calculated based on the time between the request creation and closure.
 
-```text
-POST /api/requests/{id}/reopen
-```
+- Open requests: Calculated using the current time.
+- Closed requests: Calculated using the closure time.
+- Default TAT limit: 5 days.
 
-Refer to the FastAPI Swagger documentation at `/docs` for the actual available endpoints and request formats.
+## SQL Reports
 
-## 6. Understanding the Project Files
+The `reports.sql` file contains SQL queries for:
 
-| File                | Description                                           |
-| ------------------- | ----------------------------------------------------- |
-| `main.py`           | FastAPI routes, MySQL connection, and CRUD operations |
-| `static/index.html` | Frontend page structure and forms                     |
-| `static/style.css`  | Styling and responsive design                         |
-| `static/app.js`     | JavaScript functionality and Fetch API calls          |
-| `schema.sql`        | Creates the database and table                        |
-| `reports.sql`       | Contains SQL reports and queries                      |
-| `requirements.txt`  | Required Python packages                              |
+- Complete service request listing.
+- Status-wise count.
+- Region-wise count.
+- Customer-wise count.
+- TAT reports.
+- Last 7 days reports.
 
-## 7. How Fetch API Works
+## Project Objective
 
-When a user adds a service request:
-
-1. JavaScript reads the form values.
-2. The Fetch API sends the data to FastAPI using an HTTP POST request.
-3. FastAPI receives the JSON data.
-4. Python processes the request and inserts the data into MySQL.
-5. FastAPI sends a response to JavaScript.
-6. JavaScript refreshes the request listing to display the updated data.
-
-The same communication approach is used for viewing, editing, deleting, and filtering service requests.
-
-## 8. Turnaround Time (TAT)
-
-Turnaround Time (TAT) measures the time taken to resolve a service request.
-
-* For closed requests, TAT is calculated using the request time and closure time.
-* For open requests, TAT is calculated using the request time and current time.
-* The application displays whether a request is Within TAT or TAT Breached.
-* The default TAT limit is 5 days.
-
-You can change the TAT threshold using the `TAT_LIMIT_DAYS` environment variable before starting the application.
-
-Example:
-
-```powershell
-$env:TAT_LIMIT_DAYS="5"
-```
-
-Confirm the required TAT threshold with the assignment or interviewer if a different SLA is specified.
-
-## 9. Testing Checklist
-
-Before submitting the project, verify the following functionalities:
-
-* [ ] MySQL database connection
-* [ ] Add service request
-* [ ] View service requests
-* [ ] Edit service request
-* [ ] Delete service request
-* [ ] Search functionality
-* [ ] Status, region, and location filters
-* [ ] Date filters
-* [ ] Reopen request functionality
-* [ ] TAT calculation and filtering
-* [ ] CSV export
-* [ ] Pagination
-* [ ] Print table
-
-## 10. Important Notes
-
-* This is a beginner-friendly learning project.
-* The frontend communicates with the backend using JavaScript Fetch API.
-* FastAPI handles the backend operations.
-* MySQL stores the service request information.
-* The application does not use Jinja2 templates.
-* Ensure all functionalities work correctly before presenting or submitting the project.
-
----
-
-**Project:** Service Request Management System
-
-**Backend:** Python + FastAPI
-
-**Frontend:** HTML + CSS + JavaScript
-
-**Database:** MySQL
+The objective of this project is to develop a service request management application that helps manage customer requests, track their status, monitor turnaround time, and generate reports using a simple frontend and backend architecture.
 
