@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Request Management</title><link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/"><span class="brand-mark">SR</span><span><strong>Service Desk</strong><small>Request Management System</small></span></a><nav><a class="nav-link" href="#list">Requests</a><button class="primary" onclick="showForm()">＋ Add Request</button></nav></header>
+<main>
+  <section id="listPage">
+    <div class="page-heading"><div><h2>Service Requests</h2><p>Manage customer service requests in one place.</p></div><div class="toolbar"><button onclick="downloadCSV()">↓ Export CSV</button><button class="primary" onclick="showForm()">＋ Add Request</button></div></div>
+    <div class="pipe" id="statusCards"></div>
+    <section class="panel"><h3 class="filter-title">Search and filter</h3><div class="filters">
+      <div class="f"><label>Search</label><input id="search" placeholder="Name, email, phone or case ID" oninput="loadRequests(1)"></div>
+      <div class="f"><label>Status</label><select id="status" onchange="loadRequests(1)"><option value="">All statuses</option><option>RECEIVED</option><option>ACKNOWLEDGED</option><option>WIP</option><option>TECH-COMPLETED</option><option>CLOSED</option></select></div>
+      <div class="f"><label>Region</label><select id="region" onchange="loadRequests(1)"><option value="">All regions</option><option>International</option><option>North</option><option>South</option><option>SouthCentral</option><option>West</option></select></div>
+      <div class="f"><label>Location</label><input id="location" placeholder="Enter location" oninput="loadRequests(1)"></div>
+      <div class="f"><label>Date range</label><select id="datePreset" onchange="toggleCustomDates()"><option value="all">All dates</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="this_fy">Current financial year</option><option value="last_fy">Previous financial year</option><option value="custom">Custom date range</option></select></div>
+      <div class="f" id="customFromWrap" hidden><label>From date</label><input id="dateFrom" type="date"></div>
+      <div class="f" id="customToWrap" hidden><label>To date</label><input id="dateTo" type="date"></div>
+      <div class="f"><label><input id="reopenedOnly" type="checkbox" onchange="loadRequests(1)"> Reopened only</label></div>
+      <div class="f"><label><input id="tatBreached" type="checkbox" onchange="loadRequests(1)"> TAT breached only</label></div>
+      <div class="f filter-actions"><button type="button" onclick="loadRequests(1)">Apply filters</button><button type="button" onclick="resetFilters()">Reset</button></div>
+    </div></section>
+    <div class="toolbar"><h2>Request listing</h2><div><button type="button" onclick="printTable()">Print table</button> <span class="chip" id="totalLabel">0 requests</span></div></div>
+    <div class="tablewrap"><table><thead><tr><th>Case ID</th><th>Customer</th><th>Product / Issue</th><th>Location</th><th>Region</th><th>Requested</th><th>Status</th><th>TAT (days)</th><th>Actions</th></tr></thead><tbody id="requestRows"><tr><td colspan="9" class="empty">Loading requests...</td></tr></tbody></table></div>
+    <div class="pager"><button id="previous" onclick="changePage(-1)">Previous</button><span id="pageLabel">Page 1</span><button id="next" onclick="changePage(1)">Next</button></div>
+  </section>
+  <section id="formPage" hidden>
+    <div class="page-heading"><div><h2 id="formTitle">Add service request</h2><p>Enter the customer and service request details.</p></div><button onclick="showList()">← Back to listing</button></div>
+    <form id="requestForm" onsubmit="saveRequest(event)">
+      <div class="card"><h3>Customer details</h3><div class="grid">
+        <label class="fld">Name *<input name="name" required></label><label class="fld">Email<input name="email" type="email"></label><label class="fld">Phone<input name="phoneNumber"></label><label class="fld">Customer ID<input name="customerID" type="number"></label><label class="fld">Company<input name="companyName"></label><label class="fld">Manual customer <input name="customerManual" type="checkbox"></label>
+      </div></div>
+      <div class="card"><h3>Product and location</h3><div class="grid">
+        <label class="fld">Product ID<input name="productID"></label><label class="fld">Product type<input name="productType"></label><label class="fld">Subcategory ID<input name="subcategoryID" type="number"></label><label class="fld">Subcategory<input name="subcategoryName"></label><label class="fld">Location ID<input name="locationID" type="number"></label><label class="fld">Location name<input name="locationName"></label><label class="fld">Region<select name="regionName"><option value="">Select region</option><option>International</option><option>North</option><option>South</option><option>SouthCentral</option><option>West</option></select></label>
+      </div></div>
+      <div class="card"><h3>Issue and handling</h3><div class="grid">
+        <label class="fld wide">Issue description<textarea name="issueDescription"></textarea></label><label class="fld wide">Remarks<textarea name="remarks"></textarea></label><label class="fld wide">Issue image paths / URLs<textarea name="issueImages"></textarea></label><label class="fld">Requested at<input name="requestTime" type="datetime-local"></label><label class="fld">User ID<input name="userID" type="number"></label><label class="fld">Status<select name="status"><option>RECEIVED</option><option>ACKNOWLEDGED</option><option>WIP</option><option>TECH-COMPLETED</option><option>CLOSED</option></select></label>
+      </div></div>
+      <div class="form-actions"><button class="primary" type="submit">Save request</button><button type="button" onclick="showList()">Cancel</button></div>
+    </form>
+  </section>
+  <section id="viewPage" hidden><div class="page-heading"><div><h2>Request details</h2><p>Full information for this service request.</p></div><button onclick="showList()">← Back to listing</button></div><div class="card" id="requestDetails"></div></section>
+  <div id="notice" class="msg" hidden></div>
+</main><footer>Service Request Management System <span>•</span> FastAPI <span>•</span> MySQL</footer>
+<script src="/static/app.js"></script>
+</body></html>
