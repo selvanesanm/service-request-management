@@ -1,4 +1,4 @@
-# Service Request Management System (No Jinja2)
+# Service Request Management System
 
 A beginner-friendly CRUD project using **Python, FastAPI, MySQL, HTML, CSS and JavaScript Fetch API**. It does not use Jinja2.
 
